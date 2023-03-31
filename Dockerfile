@@ -1,6 +1,6 @@
 FROM tomcat:9.0.62-jdk8-openjdk-bullseye
 
-ARG XNAT_VERSION=1.8.7
+ARG XNAT_VERSION=1.8.7.1
 ARG XNAT_ROOT=/data/xnat
 ARG XNAT_HOME=/data/xnat/home
 ARG XNAT_DATASOURCE_DRIVER=org.postgresql.Driver
@@ -14,7 +14,7 @@ ARG XNAT_MIN_HEAP=2000m
 ARG XNAT_MAX_HEAP=2000m
 
 # default plugins for AIS
-ARG container_service_ver=3.3.0-fat
+ARG container_service_ver=3.3.1-fat
 ARG ldap_auth_ver=1.1.0
 ARG ohif_viewer_ver=3.5.0-XNAT-1.8.7
 ARG openid_auth_ver=1.2.0-SNAPSHOT
