@@ -1,6 +1,6 @@
 FROM tomcat:9.0.62-jdk8-openjdk-bullseye
 
-ARG XNAT_VERSION=1.8.8
+ARG XNAT_VERSION=1.8.8.1
 ARG XNAT_ROOT=/data/xnat
 ARG XNAT_HOME=/data/xnat/home
 ARG XNAT_DATASOURCE_DRIVER=org.postgresql.Driver
@@ -17,7 +17,7 @@ ARG XNAT_MAX_HEAP=2000m
 ARG container_service_ver=3.3.1-fat
 ARG ldap_auth_ver=1.1.0
 ARG ohif_viewer_ver=3.5.1-XNAT-1.8.7
-ARG openid_auth_ver=1.2.1-SNAPSHOT
+ARG openid_auth_ver=1.2.0-SNAPSHOT
 ARG xsync_ver=1.5.0
 ARG batch_launch_ver=0.6.0
 
