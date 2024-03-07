@@ -1,4 +1,4 @@
-FROM tomcat:9.0.62-jdk8-openjdk-bullseye
+FROM tomcat:9-jdk8 as build
 
 ARG XNAT_VERSION=1.8.9.2
 ARG XNAT_ROOT=/data/xnat
@@ -10,8 +10,6 @@ ARG XNAT_DATASOURCE_PASSWORD=xnat
 ARG XNAT_SMTP_ENABLED=false
 ARG TOMCAT_XNAT_FOLDER=ROOT
 ARG TOMCAT_XNAT_FOLDER_PATH=${CATALINA_HOME}/webapps/${TOMCAT_XNAT_FOLDER}
-ARG XNAT_MIN_HEAP=2000m
-ARG XNAT_MAX_HEAP=2000m
 
 # default plugins for AIS
 ARG container_service_ver=3.4.2-fat
@@ -25,46 +23,81 @@ ARG batch_launch_ver=0.6.0
 ENV CATALINA_OPTS="-Xms${XNAT_MIN_HEAP} -Xmx${XNAT_MAX_HEAP} -Dxnat.home=${XNAT_HOME}"
 ENV XNAT_HOME=${XNAT_HOME}
 
-ADD make-xnat-config.sh /usr/local/bin/make-xnat-config.sh
-ADD entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod u+x /usr/local/bin/*.sh
+RUN <<EOT
+  apt-get update
+  apt-get install -y \
+    less \
+    postgresql-client \
+    telnet \
+    unzip \
+    wget
+  rm -rf /var/lib/apt/lists/*
+EOT
 
-RUN apt-get update && apt-get install -y postgresql-client wget telnet less
+RUN <<EOT
+  rm -rf ${CATALINA_HOME}/webapps/*
+  mkdir -p \
+    ${TOMCAT_XNAT_FOLDER_PATH} \
+    ${XNAT_HOME}/config \
+    ${XNAT_HOME}/logs \
+    ${XNAT_HOME}/plugins \
+    ${XNAT_HOME}/work \
+    ${XNAT_ROOT}/archive \
+    ${XNAT_ROOT}/build \
+    ${XNAT_ROOT}/cache \
+    ${XNAT_ROOT}/ftp \
+    ${XNAT_ROOT}/pipeline \
+    ${XNAT_ROOT}/prearchive
+EOT
 
-RUN rm -rf ${CATALINA_HOME}/webapps/*
-RUN mkdir -p \
-        ${TOMCAT_XNAT_FOLDER_PATH} \
-        ${XNAT_HOME}/config \
-        ${XNAT_HOME}/logs \
-        ${XNAT_HOME}/plugins \
-        ${XNAT_HOME}/work \
-        ${XNAT_ROOT}/archive \
-        ${XNAT_ROOT}/build \
-        ${XNAT_ROOT}/cache \
-        ${XNAT_ROOT}/ftp \
-        ${XNAT_ROOT}/pipeline \
-        ${XNAT_ROOT}/prearchive
-RUN /usr/local/bin/make-xnat-config.sh
-RUN rm /usr/local/bin/make-xnat-config.sh
-RUN wget --no-verbose --output-document=/tmp/xnat-web-${XNAT_VERSION}.war https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war
-RUN unzip -o -d ${TOMCAT_XNAT_FOLDER_PATH} /tmp/xnat-web-${XNAT_VERSION}.war
-RUN rm -f /tmp/xnat-web-${XNAT_VERSION}.war
-RUN sed -i 's/ch.qos.logback.core.rolling.RollingFileAppender/ch.qos.logback.core.ConsoleAppender/' ${TOMCAT_XNAT_FOLDER_PATH}/WEB-INF/classes/logback.xml
+RUN <<EOT
+  wget --no-verbose -P /tmp \
+    https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war
+  unzip -o -d ${TOMCAT_XNAT_FOLDER_PATH} /tmp/xnat-web-${XNAT_VERSION}.war
+  sed -i \
+    's/ch.qos.logback.core.rolling.RollingFileAppender/ch.qos.logback.core.ConsoleAppender/' \
+    ${TOMCAT_XNAT_FOLDER_PATH}/WEB-INF/classes/logback.xml
+EOT
 
 # Download standard plugins
-RUN wget --no-verbose -O container-service-${container_service_ver}.jar https://api.bitbucket.org/2.0/repositories/xnatdev/container-service/downloads/container-service-${container_service_ver}.jar
-RUN wget --no-verbose -O ldap-auth-plugin-${ldap_auth_ver}.jar https://api.bitbucket.org/2.0/repositories/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-${ldap_auth_ver}.jar
-RUN wget --no-verbose -O ohif-viewer-${ohif_viewer_ver}.jar https://api.bitbucket.org/2.0/repositories/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-${ohif_viewer_ver}.jar
-RUN wget --no-verbose -O openid-auth-plugin-${openid_auth_ver}.jar https://api.bitbucket.org/2.0/repositories/xnatx/openid-auth-plugin/downloads/openid-auth-plugin-${openid_auth_ver}.jar
-RUN wget --no-verbose -O xsync-plugin-all-${xsync_ver}.jar https://api.bitbucket.org/2.0/repositories/xnatdev/xsync/downloads/xsync-plugin-all-${xsync_ver}.jar
-RUN wget --no-verbose -O batch-launch-${batch_launch_ver}.jar https://api.bitbucket.org/2.0/repositories/xnatx/xnatx-batch-launch-plugin/downloads/batch-launch-${batch_launch_ver}.jar
-RUN mv *.jar ${XNAT_HOME}/plugins/
+RUN <<EOT
+  wget --no-verbose -P ${XNAT_HOME}/plugins \
+    https://api.bitbucket.org/2.0/repositories/xnatdev/container-service/downloads/container-service-${container_service_ver}.jar
+  wget --no-verbose -P ${XNAT_HOME}/plugins \
+    https://api.bitbucket.org/2.0/repositories/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-${ldap_auth_ver}.jar
+  wget --no-verbose -P ${XNAT_HOME}/plugins \
+    https://api.bitbucket.org/2.0/repositories/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-${ohif_viewer_ver}.jar
+  wget --no-verbose -P ${XNAT_HOME}/plugins \
+    https://api.bitbucket.org/2.0/repositories/xnatx/openid-auth-plugin/downloads/openid-auth-plugin-${openid_auth_ver}.jar
+  wget --no-verbose -P ${XNAT_HOME}/plugins \
+    https://api.bitbucket.org/2.0/repositories/xnatdev/xsync/downloads/xsync-plugin-all-${xsync_ver}.jar
+  wget --no-verbose -P ${XNAT_HOME}/plugins \
+    https://api.bitbucket.org/2.0/repositories/xnatx/xnatx-batch-launch-plugin/downloads/batch-launch-${batch_launch_ver}.jar
+EOT
 
-ENV XNAT_HOME=${XNAT_HOME} XNAT_DATASOURCE_USERNAME=${XNAT_DATASOURCE_USERNAME} PGPASSWORD=${XNAT_DATASOURCE_PASSWORD}
+
+FROM tomcat:9-jdk8
+ARG XNAT_VERSION=1.8.9.2
+ARG XNAT_ROOT=/data/xnat
+ARG XNAT_HOME=/data/xnat/home
+
+RUN <<EOT
+  rm -rf /var/lib/apt/lists/*
+  rm -rf ${CATALINA_HOME}/webapps/*
+EOT
+
+COPY --from=build ${CATALINA_HOME}/webapps/ ${CATALINA_HOME}/webapps/
+COPY --from=build ${XNAT_HOME} ${XNAT_HOME}
+COPY --chmod=0755 ./setenv.sh ${CATALINA_HOME}/bin/setenv.sh
+COPY --chmod=0755 ./entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY ./xnat-conf.properties ${XNAT_HOME}/config/xnat-conf.properties
+
+ENV XNAT_HOME=${XNAT_HOME} \
+    XNAT_VERSION=$XNAT_VERSION \
+    TZ=Australia/Sydney
 
 LABEL org.opencontainers.image.source https://github.com/australian-imaging-service/xnat-build
 LABEL maintainer="AIS Team ais-team@ais"
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh", "/usr/local/tomcat/bin/catalina.sh", "run"]
-USER 0
-
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["catalina.sh","run"]
