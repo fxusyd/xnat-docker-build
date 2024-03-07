@@ -3,13 +3,6 @@ FROM tomcat:9-jdk8 as build
 ARG XNAT_VERSION=1.8.9.2
 ARG XNAT_ROOT=/data/xnat
 ARG XNAT_HOME=/data/xnat/home
-ARG XNAT_DATASOURCE_DRIVER=org.postgresql.Driver
-ARG XNAT_DATASOURCE_URL=jdbc:postgresql://xnat-postgresql/xnat
-ARG XNAT_DATASOURCE_USERNAME=xnat
-ARG XNAT_DATASOURCE_PASSWORD=xnat
-ARG XNAT_SMTP_ENABLED=false
-ARG TOMCAT_XNAT_FOLDER=ROOT
-ARG TOMCAT_XNAT_FOLDER_PATH=${CATALINA_HOME}/webapps/${TOMCAT_XNAT_FOLDER}
 
 # default plugins for AIS
 ARG container_service_ver=3.4.2-fat
@@ -18,10 +11,6 @@ ARG ohif_viewer_ver=3.6.0
 ARG openid_auth_ver=1.3.1-xpl
 ARG xsync_ver=1.6.0
 ARG batch_launch_ver=0.6.0
-
-# default environment variables
-ENV CATALINA_OPTS="-Xms${XNAT_MIN_HEAP} -Xmx${XNAT_MAX_HEAP} -Dxnat.home=${XNAT_HOME}"
-ENV XNAT_HOME=${XNAT_HOME}
 
 RUN <<EOT
   apt-get update
@@ -34,29 +23,31 @@ RUN <<EOT
   rm -rf /var/lib/apt/lists/*
 EOT
 
+# Setup XNAT base directory structure
 RUN <<EOT
-  rm -rf ${CATALINA_HOME}/webapps/*
   mkdir -p \
-    ${TOMCAT_XNAT_FOLDER_PATH} \
-    ${XNAT_HOME}/config \
-    ${XNAT_HOME}/logs \
-    ${XNAT_HOME}/plugins \
-    ${XNAT_HOME}/work \
     ${XNAT_ROOT}/archive \
     ${XNAT_ROOT}/build \
     ${XNAT_ROOT}/cache \
+    ${XNAT_ROOT}/fileStore \
     ${XNAT_ROOT}/ftp \
+    ${XNAT_HOME}/config/auth \
+    ${XNAT_HOME}/logs \
+    ${XNAT_HOME}/plugins \
+    ${XNAT_HOME}/themes \
+    ${XNAT_HOME}/work \
+    ${XNAT_ROOT}/inbox \
     ${XNAT_ROOT}/pipeline \
     ${XNAT_ROOT}/prearchive
 EOT
 
+# Install XNAT web Java application
 RUN <<EOT
+  rm -rf ${CATALINA_HOME}/webapps/*
+  mkdir -p ${CATALINA_HOME}/webapps/ROOT
   wget --no-verbose -P /tmp \
     https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war
-  unzip -o -d ${TOMCAT_XNAT_FOLDER_PATH} /tmp/xnat-web-${XNAT_VERSION}.war
-  sed -i \
-    's/ch.qos.logback.core.rolling.RollingFileAppender/ch.qos.logback.core.ConsoleAppender/' \
-    ${TOMCAT_XNAT_FOLDER_PATH}/WEB-INF/classes/logback.xml
+  unzip -o -d ${CATALINA_HOME}/webapps/ROOT /tmp/xnat-web-${XNAT_VERSION}.war
 EOT
 
 # Download standard plugins
@@ -77,9 +68,9 @@ EOT
 
 
 FROM tomcat:9-jdk8
-ARG XNAT_VERSION=1.8.9.2
 ARG XNAT_ROOT=/data/xnat
 ARG XNAT_HOME=/data/xnat/home
+ARG XNAT_VERSION=1.8.9.2
 
 RUN <<EOT
   rm -rf /var/lib/apt/lists/*
@@ -87,7 +78,14 @@ RUN <<EOT
 EOT
 
 COPY --from=build ${CATALINA_HOME}/webapps/ ${CATALINA_HOME}/webapps/
-COPY --from=build ${XNAT_HOME} ${XNAT_HOME}
+COPY --from=build ${XNAT_ROOT} ${XNAT_ROOT}
+
+RUN <<EOT
+  sed -i \
+    's/ch.qos.logback.core.rolling.RollingFileAppender/ch.qos.logback.core.ConsoleAppender/' \
+    ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/logback.xml
+EOT
+
 COPY --chmod=0755 ./setenv.sh ${CATALINA_HOME}/bin/setenv.sh
 COPY --chmod=0755 ./entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ./xnat-conf.properties ${XNAT_HOME}/config/xnat-conf.properties
