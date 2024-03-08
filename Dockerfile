@@ -92,7 +92,7 @@ COPY ./xnat-conf.properties ${XNAT_HOME}/config/xnat-conf.properties
 
 ENV XNAT_HOME=${XNAT_HOME} \
     XNAT_VERSION=$XNAT_VERSION \
-    TZ=Australia/Sydney
+    TZ=UTC
 
 LABEL org.opencontainers.image.source https://github.com/australian-imaging-service/xnat-build
 LABEL maintainer="AIS Team ais-team@ais"
