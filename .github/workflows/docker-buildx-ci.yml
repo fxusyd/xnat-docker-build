@@ -2,7 +2,7 @@ name: XNAT Image Build
 on:
   push:
     tags:
-      - "*"
+      - "v*"
   workflow_dispatch:
 
 env:
