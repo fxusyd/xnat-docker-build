@@ -2,7 +2,7 @@ name: XNAT Image Build
 on:
   push:
     tags:
-      - "*"
+      - "v*"
   workflow_dispatch:
 
 env:
@@ -31,7 +31,7 @@ jobs:
           tags: |
             type=semver,priority=900,pattern={{version}}
             type=match,priority=800,pattern=v(.*)
-            type=match,priority=800,pattern=\d.\d.\d.\d
+            type=match,priority=800,pattern=\d+.\d+.\d+.\d+
             type=sha
       - 
         name: Set up QEMU
