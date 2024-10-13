@@ -1,15 +1,16 @@
-ARG XNAT_VERSION=1.8.10.1
+ARG XNAT_VERSION=1.9.0
 ARG XNAT_ROOT=/data/xnat
 ARG XNAT_HOME=/data/xnat/home
 # default plugins for AIS
-ARG container_service_ver=3.4.3-fat
-ARG ldap_auth_ver=1.1.0
-ARG ohif_viewer_ver=3.6.2
+ARG container_service_ver=3.6.0-fat
+ARG ldap_auth_ver=1.2.0
+ARG ohif_viewer_ver=3.7.0-XNAT-1.8.10
 ARG openid_auth_ver=1.3.1-xpl
-ARG xsync_ver=1.7.0
-ARG batch_launch_ver=0.6.0
+ARG xsync_ver=1.8.0
+ARG batch_launch_ver=0.7.0
+ARG jupyterhub_ver=1.2.0
 
-FROM tomcat:9-jdk8 as build
+FROM tomcat:9-jdk8 AS build
 ARG XNAT_VERSION
 ARG XNAT_ROOT
 ARG XNAT_HOME
@@ -20,6 +21,7 @@ ARG ohif_viewer_ver
 ARG openid_auth_ver
 ARG xsync_ver
 ARG batch_launch_ver
+ARG jupyterhub_ver
 
 RUN <<EOT
   apt-get update
@@ -70,6 +72,8 @@ RUN <<EOT
     https://api.bitbucket.org/2.0/repositories/xnatdev/xsync/downloads/xsync-plugin-all-${xsync_ver}.jar
   wget --no-verbose -P ${XNAT_HOME}/plugins \
     https://api.bitbucket.org/2.0/repositories/xnatx/xnatx-batch-launch-plugin/downloads/batch-launch-${batch_launch_ver}.jar
+  wget --no-verbose -P ${XNAT_HOME}/plugins \
+    https://api.bitbucket.org/2.0/repositories/xnatx/xnat-jupyterhub-plugin/downloads/xnat-jupyterhub-plugin-${jupyterhub_ver}.jar  
 EOT
 
 FROM tomcat:9-jdk8
