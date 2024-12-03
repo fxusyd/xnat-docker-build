@@ -94,11 +94,11 @@ EOT
 COPY --from=build ${CATALINA_HOME}/webapps/ ${CATALINA_HOME}/webapps/
 COPY --from=build ${XNAT_ROOT} ${XNAT_ROOT}
 
-RUN <<EOT
-  sed -i \
-    's/ch.qos.logback.core.rolling.RollingFileAppender/ch.qos.logback.core.ConsoleAppender/' \
-    ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/logback.xml
-EOT
+# RUN <<EOT
+#   sed -i \
+#     's/ch.qos.logback.core.rolling.RollingFileAppender/ch.qos.logback.core.ConsoleAppender/' \
+#     ${CATALINA_HOME}/webapps/ROOT/WEB-INF/classes/logback.xml
+# EOT
 
 COPY --chmod=0755 ./entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ./xnat-conf.properties ${XNAT_HOME}/config/xnat-conf.properties
