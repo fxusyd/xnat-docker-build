@@ -29,10 +29,8 @@ jobs:
           images: |
             ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.PACKAGE_NAME }}
           tags: |
-            type=semver,priority=900,pattern={{version}}
-            type=match,priority=800,pattern=v(.*)
-            type=match,priority=800,pattern=\d+.\d+.\d+.\d+
-            type=match,priority=800,pattern=\d+.\d+.\d+
+            type=pep440,pattern={{raw}}
+            type=pep440,pattern={{version}}
             type=sha
       - 
         name: Set up QEMU
