@@ -1,13 +1,13 @@
-ARG XNAT_VERSION=1.9.1.2
+ARG XNAT_VERSION=1.9.2
 ARG XNAT_ROOT=/data/xnat
 ARG XNAT_HOME=/data/xnat/home
 # default plugins for AIS
 ARG container_service_ver=3.7.1-fat
 ARG ldap_auth_ver=1.2.1
-ARG ohif_viewer_ver=3.7.0-XNAT-1.8.10
+ARG ohif_viewer_ver=3.7.1-fat
 ARG openid_auth_ver=1.3.1-xpl
 ARG xsync_ver=1.8.1
-ARG batch_launch_ver=0.7.1
+ARG batch_launch_ver=0.8.0-xpl
 ARG jupyterhub_ver=1.3.1
 
 FROM tomcat:9-jdk8 AS build
@@ -65,7 +65,7 @@ RUN <<EOT
   wget --no-verbose -P ${XNAT_HOME}/plugins \
     https://api.bitbucket.org/2.0/repositories/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-${ldap_auth_ver}.jar
   wget --no-verbose -P ${XNAT_HOME}/plugins \
-    https://api.bitbucket.org/2.0/repositories/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-${ohif_viewer_ver}.jar
+    https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-${ohif_viewer_ver}.jar
   wget --no-verbose -P ${XNAT_HOME}/plugins \
     https://api.bitbucket.org/2.0/repositories/xnatx/openid-auth-plugin/downloads/openid-auth-plugin-${openid_auth_ver}.jar
   wget --no-verbose -P ${XNAT_HOME}/plugins \
