@@ -1,13 +1,13 @@
-ARG XNAT_VERSION=1.9.2
+ARG XNAT_VERSION=1.9.2.2
 ARG XNAT_ROOT=/data/xnat
 ARG XNAT_HOME=/data/xnat/home
 # default plugins for AIS
-ARG container_service_ver=3.7.1-fat
-ARG ldap_auth_ver=1.2.1
+ARG container_service_ver=3.7.2-fat
+ARG ldap_auth_ver=1.3.0
 ARG ohif_viewer_ver=3.7.1-fat
 ARG openid_auth_ver=1.3.1-xpl
 ARG xsync_ver=1.8.1
-ARG batch_launch_ver=0.8.0-xpl
+ARG batch_launch_ver=0.8.1-xpl
 ARG jupyterhub_ver=1.3.1
 
 FROM tomcat:9-jdk8 AS build
