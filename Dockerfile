@@ -3,7 +3,7 @@ ARG XNAT_ROOT=/data/xnat
 ARG XNAT_HOME=/data/xnat/home
 # default plugins for AIS
 ARG container_service_ver=3.7.2-fat
-ARG ldap_auth_ver=1.3.0
+ARG ldap_auth_ver=1.2.1
 ARG ohif_viewer_ver=3.7.1-fat
 ARG openid_auth_ver=1.3.1-xpl
 ARG xsync_ver=1.8.1
