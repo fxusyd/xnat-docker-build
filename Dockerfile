@@ -94,6 +94,9 @@ EOT
 COPY --from=build ${CATALINA_HOME}/webapps/ ${CATALINA_HOME}/webapps/
 COPY --from=build ${XNAT_ROOT} ${XNAT_ROOT}
 
+# Replace jar with the one Mohana sent
+COPY ./core-1.9.3-SNAPSHOT.jar ${CATALINA_HOME}/webapps/ROOT/WEB-INF/lib/core-1.9.3-SNAPSHOT.jar 
+
 # RUN <<EOT
 #   sed -i \
 #     's/ch.qos.logback.core.rolling.RollingFileAppender/ch.qos.logback.core.ConsoleAppender/' \
