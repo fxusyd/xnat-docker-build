@@ -54,8 +54,9 @@ RUN <<EOT
   rm -rf ${CATALINA_HOME}/webapps/*
   mkdir -p ${CATALINA_HOME}/webapps/ROOT
   wget --no-verbose -P /tmp \
-    https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war
-  unzip -o -d ${CATALINA_HOME}/webapps/ROOT /tmp/xnat-web-${XNAT_VERSION}.war
+    # https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war
+    https://bitbucket.org/rherrick/xnat-web/downloads/xnat-web-1.9.3-SNAPSHOT.war
+  unzip -o -d ${CATALINA_HOME}/webapps/ROOT /tmp/xnat-web-1.9.3-SNAPSHOT.war
 EOT
 
 # Download standard plugins
