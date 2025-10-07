@@ -1,4 +1,4 @@
-ARG XNAT_VERSION=1.9.2.2
+ARG XNAT_VERSION=1.9.2.3
 ARG XNAT_ROOT=/data/xnat
 ARG XNAT_HOME=/data/xnat/home
 # default plugins for AIS
