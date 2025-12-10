@@ -4,7 +4,7 @@ ARG XNAT_HOME=/data/xnat/home
 # default plugins for AIS
 ARG container_service_ver=3.7.3-fat
 ARG ldap_auth_ver=1.3.0
-ARG ohif_viewer_ver=3.7.2-fat
+ARG ohif_viewer_ver=3.7.2
 ARG openid_auth_ver=1.4.0-xpl
 ARG xsync_ver=1.8.1
 ARG batch_launch_ver=0.9.0-xpl
@@ -73,7 +73,7 @@ RUN <<EOT
   wget --no-verbose -P ${XNAT_HOME}/plugins \
     https://api.bitbucket.org/2.0/repositories/xnatx/xnatx-batch-launch-plugin/downloads/batch-launch-${batch_launch_ver}.jar
   wget --no-verbose -P ${XNAT_HOME}/plugins \
-    https://api.bitbucket.org/2.0/repositories/xnatx/xnat-jupyterhub-plugin/downloads/xnat-jupyterhub-plugin-${jupyterhub_ver}.jar  
+    https://github.com/NrgXnat/xnat-jupyterhub-plugin/releases/download/v1.3.3/xnat-jupyterhub-plugin-${jupyterhub_ver}.jar
 EOT
 
 FROM tomcat:9-jdk8
