@@ -51,10 +51,12 @@ EOT
 
 # Install XNAT web Java application
 RUN <<EOT
+  set -eux
   rm -rf ${CATALINA_HOME}/webapps/*
   mkdir -p ${CATALINA_HOME}/webapps/ROOT
-  wget --no-verbose -P /tmp \
+  wget -P /tmp \
     https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war
+  ls -lh /tmp/*.war
   unzip -o -d ${CATALINA_HOME}/webapps/ROOT /tmp/xnat-web-${XNAT_VERSION}.war
 EOT
 
