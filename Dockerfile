@@ -54,8 +54,8 @@ RUN <<EOT
   set -eux
   rm -rf ${CATALINA_HOME}/webapps/*
   mkdir -p ${CATALINA_HOME}/webapps/ROOT
-  ls -ld {CATALINA_HOME}/webapps/ROOT
-  ls -l /tmp/
+  ls -ld ${CATALINA_HOME}/webapps/ROOT
+  ls -ld /tmp/
   wget \ 
     -P /tmp \
     https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-1.9.3.1.war
