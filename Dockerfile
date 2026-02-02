@@ -56,8 +56,11 @@ RUN <<EOT
   mkdir -p ${CATALINA_HOME}/webapps/ROOT
   ls -ld ${CATALINA_HOME}/webapps/ROOT
   ls -ld /tmp/
-  wget -P /tmp \
-    https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-1.9.3.1.war
+  wget --user-agent="Mozilla/5.0 (X11; Linux x86_64)" \
+    --max-redirect=20 \
+    --inet4-only \
+    -P /tmp \
+    https://api.bitbucket.org/2.0/repositories/xnatdev/xnat-web/downloads/xnat-web-${XNAT_VERSION}.war
   ls -lh /tmp/*.war
   unzip -o -d ${CATALINA_HOME}/webapps/ROOT /tmp/xnat-web-${XNAT_VERSION}.war
 EOT
