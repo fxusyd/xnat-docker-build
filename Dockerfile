@@ -50,32 +50,39 @@ RUN <<EOT
 EOT
 
 # Install XNAT web Java application
+COPY ./artifacts/xnat-web-${XNAT_VERSION}.war /tmp/
 RUN <<EOT
   set -eux
   rm -rf ${CATALINA_HOME}/webapps/*
   mkdir -p ${CATALINA_HOME}/webapps/ROOT
-  wget -P /tmp \
-    https://nrgxnat.jfrog.io/artifactory/libs-release-local/org/nrg/xnat/web/xnat-web/1.9.3.1/xnat-web-${XNAT_VERSION}.war
+  # wget -P /tmp \
+  #   https://nrgxnat.jfrog.io/artifactory/libs-release-local/org/nrg/xnat/web/xnat-web/1.9.3.1/xnat-web-${XNAT_VERSION}.war
   unzip -o -d ${CATALINA_HOME}/webapps/ROOT /tmp/xnat-web-${XNAT_VERSION}.war
 EOT
 
 # Download standard plugins
 RUN <<EOT
-  wget --no-verbose -P ${XNAT_HOME}/plugins \
-    https://api.bitbucket.org/2.0/repositories/xnatdev/container-service/downloads/container-service-${container_service_ver}.jar
-  wget --no-verbose -P ${XNAT_HOME}/plugins \
-    https://api.bitbucket.org/2.0/repositories/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-${ldap_auth_ver}.jar
-  wget --no-verbose -P ${XNAT_HOME}/plugins \
-    https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-${ohif_viewer_ver}.jar
-  wget --no-verbose -P ${XNAT_HOME}/plugins \
-    https://api.bitbucket.org/2.0/repositories/xnatx/openid-auth-plugin/downloads/openid-auth-plugin-${openid_auth_ver}.jar
-  wget --no-verbose -P ${XNAT_HOME}/plugins \
-    https://api.bitbucket.org/2.0/repositories/xnatdev/xsync/downloads/xsync-plugin-all-${xsync_ver}.jar
-  wget --no-verbose -P ${XNAT_HOME}/plugins \
-    https://api.bitbucket.org/2.0/repositories/xnatx/xnatx-batch-launch-plugin/downloads/batch-launch-${batch_launch_ver}.jar
+  #  wget --no-verbose -P ${XNAT_HOME}/plugins \
+  #   https://api.bitbucket.org/2.0/repositories/xnatdev/container-service/downloads/container-service-${container_service_ver}.jar
+  # wget --no-verbose -P ${XNAT_HOME}/plugins \
+  #   https://api.bitbucket.org/2.0/repositories/xnatx/ldap-auth-plugin/downloads/ldap-auth-plugin-${ldap_auth_ver}.jar
+  # wget --no-verbose -P ${XNAT_HOME}/plugins \
+  #   https://xnat.org/files/ohif-viewer-xnat-plugin/ohif-viewer-${ohif_viewer_ver}.jar
+  # wget --no-verbose -P ${XNAT_HOME}/plugins \
+  #   https://api.bitbucket.org/2.0/repositories/xnatx/openid-auth-plugin/downloads/openid-auth-plugin-${openid_auth_ver}.jar
+  # wget --no-verbose -P ${XNAT_HOME}/plugins \
+  #   https://api.bitbucket.org/2.0/repositories/xnatdev/xsync/downloads/xsync-plugin-all-${xsync_ver}.jar
+  # wget --no-verbose -P ${XNAT_HOME}/plugins \
+  #   https://api.bitbucket.org/2.0/repositories/xnatx/xnatx-batch-launch-plugin/downloads/batch-launch-${batch_launch_ver}.jar
   wget --no-verbose -P ${XNAT_HOME}/plugins \
     https://github.com/NrgXnat/xnat-jupyterhub-plugin/releases/download/v1.3.3/xnat-jupyterhub-plugin-${jupyterhub_ver}.jar
 EOT
+
+COPY ./artifacts/container-service-${container_service_ver}.jar ${XNAT_HOME}/plugins/
+COPY ./artifacts/ldap-auth-plugin-${ldap_auth_ver}.jar ${XNAT_HOME}/plugins/
+COPY ./artifacts/ohif-viewer-${ohif_viewer_ver}.jar ${XNAT_HOME}/plugins/
+COPY ./artifacts/openid-auth-plugin-${openid_auth_ver}.jar ${XNAT_HOME}/plugins/
+COPY ./artifacts/xsync-plugin-all-${xsync_ver}.jar ${XNAT_HOME}/plugins/
 
 FROM tomcat:9-jdk8
 ARG XNAT_VERSION
